@@ -116,16 +116,21 @@ impl BuildSystem {
 
     fn build(&self) -> Result<(), Box<dyn Error>> {
         println!("Building optimized executable...");
+        println!("Target: {}", self.target);
         Command::new("cargo")
             .args([
+                "+nightly",
                 "build",
-                "--release",
+                "-Z",
+                "build-std=std,panic_abort",
+                "-Z",
+                "build-std-features=panic_immediate_abort",
                 "--target",
                 &self.target,
-                "--features",
-                "panic_immediate_abort",
+                "--release",
             ])
             .status()?;
+        println!("Build complete!");
         Ok(())
     }
 
