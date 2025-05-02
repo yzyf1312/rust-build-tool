@@ -15,11 +15,11 @@ pub enum DepCheckError {
 impl fmt::Display for DepCheckError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Self::ToolMissing(msg) => write!(f, "工具缺失: {}", msg),
-            Self::CargoTomlNotFound => write!(f, "找不到 Cargo.toml 文件"),
-            Self::TomlParseError(msg) => write!(f, "TOML解析错误: {}", msg),
-            Self::DependencyNotFound(dep) => write!(f, "未找到依赖项: {}", dep),
-            Self::CommandFailed(msg) => write!(f, "命令执行失败: {}", msg),
+            Self::ToolMissing(msg) => write!(f, "Tool missing: {}", msg),
+            Self::CargoTomlNotFound => write!(f, "Cargo.toml file not found"),
+            Self::TomlParseError(msg) => write!(f, "TOML parse error: {}", msg),
+            Self::DependencyNotFound(dep) => write!(f, "Dependency not found: {}", dep),
+            Self::CommandFailed(msg) => write!(f, "Command execution failed: {}", msg),
         }
     }
 }
@@ -104,19 +104,19 @@ pub fn remove_dependency(dep: &str, location: &DependencyLocation) -> RemovalRes
     match cmd.output() {
         Ok(output) if output.status.success() => RemovalResult {
             success: true,
-            message: format!("已移除 {} ({})", dep, location.section),
+            message: format!("Removed {} ({})", dep, location.section),
         },
         Ok(output) => RemovalResult {
             success: false,
             message: format!(
-                "移除失败 {}: {}",
+                "Failed to remove {}: {}",
                 dep,
                 String::from_utf8_lossy(&output.stderr).trim()
             ),
         },
         Err(e) => RemovalResult {
             success: false,
-            message: format!("移除失败 {}: {}", dep, e),
+            message: format!("Failed to remove {}: {}", dep, e),
         },
     }
 }
@@ -183,7 +183,7 @@ pub fn process_removals(deps: &[String]) -> Vec<RemovalResult> {
         Err(e) => {
             return vec![RemovalResult {
                 success: false,
-                message: format!("加载Cargo.toml失败: {}", e),
+                message: format!("Failed to load Cargo.toml: {}", e),
             }];
         }
     };
@@ -193,7 +193,7 @@ pub fn process_removals(deps: &[String]) -> Vec<RemovalResult> {
         Err(e) => {
             return vec![RemovalResult {
                 success: false,
-                message: format!("解析Cargo.toml失败: {}", e),
+                message: format!("Failed to parse Cargo.toml: {}", e),
             }];
         }
     };
@@ -204,7 +204,7 @@ pub fn process_removals(deps: &[String]) -> Vec<RemovalResult> {
             Ok(location) => results.push(remove_dependency(dep, &location)),
             Err(e) => results.push(RemovalResult {
                 success: false,
-                message: format!("定位依赖失败: {}", e),
+                message: format!("Failed to locate dependency: {}", e),
             }),
         }
     }
@@ -217,14 +217,14 @@ pub fn print_results(results: &[RemovalResult]) {
     let failures: Vec<_> = results.iter().filter(|r| !r.success).collect();
 
     if !successes.is_empty() {
-        println!("\n成功移除:");
+        println!("\nSuccessfully removed:");
         for result in successes {
             println!("  {}", result.message);
         }
     }
 
     if !failures.is_empty() {
-        println!("\n移除失败:");
+        println!("\nFailed to remove:");
         for result in failures {
             println!("  {}", result.message);
         }
@@ -235,27 +235,27 @@ pub fn print_results(results: &[RemovalResult]) {
 pub fn check_unused_dependencies() -> Result<(), DepCheckError> {
     if !check_command("cargo-udeps").is_ok() {
         return Err(DepCheckError::ToolMissing(
-            "请安装 cargo-udeps: cargo install cargo-udeps".into(),
+            "Please install cargo-udeps: cargo install cargo-udeps".into(),
         ));
     }
 
-    println!("正在扫描未使用的依赖项...");
+    println!("Scanning for unused dependencies...");
     let output = execute_udeps()?;
     let unused_deps = parse_udeps_output(&output);
 
     if unused_deps.is_empty() {
-        println!("未发现未使用的依赖项");
+        println!("No unused dependencies found");
         return Ok(());
     }
 
-    println!("\n检测到未使用的依赖项:");
+    println!("\nFound unused dependencies:");
     println!("{}", unused_deps.join("\n"));
 
-    if get_confirmation("\n确认移除这些依赖？") {
+    if get_confirmation("\nConfirm removal of these dependencies?") {
         let results = process_removals(&unused_deps);
         print_results(&results);
     } else {
-        println!("操作已取消");
+        println!("Operation cancelled");
     }
 
     Ok(())
