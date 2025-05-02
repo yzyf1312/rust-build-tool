@@ -22,6 +22,11 @@ A powerful tool for building optimized Rust executables with additional features
 cargo install --path .
 ```
 
+To build and run directly from source with UPX compression:
+```bash
+cargo run -- build --upx
+```
+
 ## Usage
 
 ### Build Command
