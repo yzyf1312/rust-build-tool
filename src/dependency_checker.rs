@@ -15,11 +15,11 @@ pub enum DepCheckError {
 impl fmt::Display for DepCheckError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Self::ToolMissing(msg) => write!(f, "Tool missing: {}", msg),
+            Self::ToolMissing(msg) => write!(f, "Tool missing: {msg}"),
             Self::CargoTomlNotFound => write!(f, "Cargo.toml file not found"),
-            Self::TomlParseError(msg) => write!(f, "TOML parse error: {}", msg),
-            Self::DependencyNotFound(dep) => write!(f, "Dependency not found: {}", dep),
-            Self::CommandFailed(msg) => write!(f, "Command execution failed: {}", msg),
+            Self::TomlParseError(msg) => write!(f, "TOML parse error: {msg}"),
+            Self::DependencyNotFound(dep) => write!(f, "Dependency not found: {dep}"),
+            Self::CommandFailed(msg) => write!(f, "Command execution failed: {msg}"),
         }
     }
 }
@@ -116,7 +116,7 @@ pub fn remove_dependency(dep: &str, location: &DependencyLocation) -> RemovalRes
         },
         Err(e) => RemovalResult {
             success: false,
-            message: format!("Failed to remove {}: {}", dep, e),
+            message: format!("Failed to remove {dep}: {e}"),
         },
     }
 }
@@ -170,7 +170,7 @@ pub fn execute_udeps() -> Result<String, DepCheckError> {
 
 // 用户确认
 pub fn get_confirmation(prompt: &str) -> bool {
-    println!("{} (y/n)", prompt);
+    println!("{prompt} (y/n)");
     let mut input = String::new();
     std::io::stdin().read_line(&mut input).unwrap();
     input.trim().eq_ignore_ascii_case("y")
@@ -183,7 +183,7 @@ pub fn process_removals(deps: &[String]) -> Vec<RemovalResult> {
         Err(e) => {
             return vec![RemovalResult {
                 success: false,
-                message: format!("Failed to load Cargo.toml: {}", e),
+                message: format!("Failed to load Cargo.toml: {e}"),
             }];
         }
     };
@@ -193,7 +193,7 @@ pub fn process_removals(deps: &[String]) -> Vec<RemovalResult> {
         Err(e) => {
             return vec![RemovalResult {
                 success: false,
-                message: format!("Failed to parse Cargo.toml: {}", e),
+                message: format!("Failed to parse Cargo.toml: {e}"),
             }];
         }
     };
@@ -204,7 +204,7 @@ pub fn process_removals(deps: &[String]) -> Vec<RemovalResult> {
             Ok(location) => results.push(remove_dependency(dep, &location)),
             Err(e) => results.push(RemovalResult {
                 success: false,
-                message: format!("Failed to locate dependency: {}", e),
+                message: format!("Failed to locate dependency: {e}"),
             }),
         }
     }
@@ -233,7 +233,7 @@ pub fn print_results(results: &[RemovalResult]) {
 
 // 主流程
 pub fn check_unused_dependencies() -> Result<(), DepCheckError> {
-    if !check_command("cargo-udeps").is_ok() {
+    if check_command("cargo-udeps").is_err() {
         return Err(DepCheckError::ToolMissing(
             "Please install cargo-udeps: cargo install cargo-udeps".into(),
         ));

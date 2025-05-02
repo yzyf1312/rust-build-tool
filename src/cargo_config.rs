@@ -49,7 +49,7 @@ impl CargoConfigManager {
         for (key, value) in RELEASE_PROFILE_SETTINGS.iter() {
             if !existing_keys.contains(&key.to_string()) {
                 let insert_pos = self.find_insert_position(lines, section_start)?;
-                lines.insert(insert_pos, format!("{} = {}", key, value));
+                lines.insert(insert_pos, format!("{key} = {value}"));
             }
         }
 

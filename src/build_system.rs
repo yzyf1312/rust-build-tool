@@ -1,6 +1,6 @@
 use std::env::consts::EXE_SUFFIX;
 use std::error::Error;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use crate::cargo_config::CargoConfigManager;
@@ -71,7 +71,7 @@ impl BuildSystem {
     }
 
     fn get_executable_path(
-        target_dir: &PathBuf,
+        target_dir: &Path,
         project_name: &str,
         target: &str,
     ) -> Result<PathBuf, Box<dyn Error>> {
@@ -84,7 +84,7 @@ impl BuildSystem {
         Ok(target_dir
             .join(target)
             .join("release")
-            .join(format!("{}{}", project_name, platform_suffix)))
+            .join(format!("{project_name}{platform_suffix}")))
     }
 
     pub fn run(&self) -> Result<(), Box<dyn Error>> {
@@ -144,7 +144,7 @@ impl BuildSystem {
 
     fn show_result(&self) -> Result<(), Box<dyn Error>> {
         let size_kb = self.executable.metadata()?.len() as f64 / 1024.0;
-        println!("\nBuild complete! Final size: {:.1} KB", size_kb);
+        println!("\nBuild complete! Final size: {size_kb:.1} KB");
         println!("Executable path: {}", self.executable.display());
         Ok(())
     }
