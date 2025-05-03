@@ -148,4 +148,22 @@ impl BuildSystem {
         println!("Executable path: {}", self.executable.display());
         Ok(())
     }
+
+    pub fn run_clippy(&self) -> Result<(), Box<dyn Error>> {
+        println!("\nRunning clippy lint checks...");
+        Command::new("cargo")
+            .args(["clippy", "--", "-D", "warnings"])
+            .status()?;
+        println!("Clippy checks passed");
+        Ok(())
+    }
+
+    pub fn run_cargo_deny(&self) -> Result<(), Box<dyn Error>> {
+        println!("\nRunning cargo-deny checks...");
+        Command::new("cargo")
+            .args(["deny", "check"])
+            .status()?;
+        println!("Cargo-deny checks passed");
+        Ok(())
+    }
 }

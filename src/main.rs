@@ -30,6 +30,24 @@ fn main() -> Result<(), Box<dyn Error>> {
                         .long("clean")
                         .help("Clean before building")
                         .action(clap::ArgAction::SetTrue),
+                )
+                .arg(
+                    Arg::new("clippy")
+                        .long("clippy")
+                        .help("Run clippy lint checks after build")
+                        .action(clap::ArgAction::SetTrue),
+                )
+                .arg(
+                    Arg::new("deny")
+                        .long("deny")
+                        .help("Run cargo-deny checks after build")
+                        .action(clap::ArgAction::SetTrue),
+                )
+                .arg(
+                    Arg::new("full-check")
+                        .long("full-check")
+                        .help("Run full workflow: clippy -> deny -> build (stops immediately on any failure)")
+                        .action(clap::ArgAction::SetTrue),
                 ),
         )
         .subcommand(Command::new("depcheck").about("Check and remove unused dependencies"))
@@ -45,7 +63,23 @@ fn main() -> Result<(), Box<dyn Error>> {
             let clean = sub_matches.get_flag("clean");
 
             let build_system = build_system::BuildSystem::new(&target, use_upx, clean)?;
-            build_system.run()?;
+            if sub_matches.get_flag("full-check") {
+                // Complete workflow: clippy -> deny -> build
+                build_system.run_clippy()?;
+                build_system.run_cargo_deny()?;
+                build_system.run()?;
+            } else {
+                // Original workflow: build -> optional checks
+                build_system.run()?;
+
+                if sub_matches.get_flag("clippy") {
+                    build_system.run_clippy()?;
+                }
+
+                if sub_matches.get_flag("deny") {
+                    build_system.run_cargo_deny()?;
+                }
+            }
         }
         Some(("depcheck", _)) => {
             dependency_checker::check_unused_dependencies()?;
