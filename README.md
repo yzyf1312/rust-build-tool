@@ -11,6 +11,8 @@ A powerful tool for building optimized Rust executables with additional features
 - ⚡ Fast builds with sensible defaults
 - ✅ Built-in quality checks (clippy, cargo-deny)
 
+![Rust Build Tool Screenshot](./assets/Snipaste_2025-05-03_08-28-02.png)
+
 ## Requirements
 
 - Rust nightly toolchain
