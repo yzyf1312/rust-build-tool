@@ -9,6 +9,7 @@ A powerful tool for building optimized Rust executables with additional features
 - 🗜️ UPX compression support
 - 🖥️ Cross-platform support
 - ⚡ Fast builds with sensible defaults
+- ✅ Built-in quality checks (clippy, cargo-deny)
 
 ## Requirements
 
@@ -39,6 +40,9 @@ Options:
 - `--target`: Specify target platform (default: auto-detect)
 - `--upx`: Enable UPX compression
 - `--clean`: Clean before building
+- `--clippy`: Run clippy lint checks
+- `--deny`: Run cargo-deny dependency audits
+- `--full-check`: Run complete QA workflow (clippy -> deny -> build)
 
 Example:
 ```bash
@@ -77,6 +81,16 @@ rust_build_tool build --upx
 3. Check and remove unused dependencies:
 ```bash
 rust_build_tool depcheck
+```
+
+4. Run complete quality assurance workflow:
+```bash
+rust_build_tool build --full-check
+```
+
+5. Run individual quality checks:
+```bash
+rust_build_tool build --clippy --deny
 ```
 
 ## Best Practices
