@@ -1,5 +1,6 @@
 use clap::{Arg, Command};
 use std::error::Error;
+use std::env;
 
 mod build_system;
 mod cargo_config;
@@ -8,7 +9,7 @@ mod platform_helper;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let matches = Command::new("rust_build_tool")
-        .version("0.1.0")
+        .version(env!("CARGO_PKG_VERSION"))
         .about("Build optimized Rust executables")
         .subcommand_required(true)
         .subcommand(
