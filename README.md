@@ -42,7 +42,7 @@ Options:
 - `--clean`: Clean before building
 - `--clippy`: Run clippy lint checks
 - `--deny`: Run cargo-deny dependency audits
-- `--full-check`: Run complete QA workflow (clippy -> deny -> build)
+- `--full-check`: Run complete QA workflow (clippy -> depcheck -> deny -> build)
 
 Example:
 ```bash
@@ -87,6 +87,12 @@ rust_build_tool depcheck
 ```bash
 rust_build_tool build --full-check
 ```
+
+This will run the following checks in sequence:
+1. Clippy lint checks
+2. Dependency check (depcheck)
+3. Cargo-deny dependency audits
+4. Final build
 
 5. Run individual quality checks:
 ```bash

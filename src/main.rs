@@ -46,7 +46,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .arg(
                     Arg::new("full-check")
                         .long("full-check")
-                        .help("Run full workflow: clippy -> deny -> build (stops immediately on any failure)")
+                        .help("Run full workflow: clippy -> depcheck -> deny -> build (stops immediately on any failure)")
                         .action(clap::ArgAction::SetTrue),
                 ),
         )
@@ -66,6 +66,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             if sub_matches.get_flag("full-check") {
                 // Complete workflow: clippy -> deny -> build
                 build_system.run_clippy()?;
+                dependency_checker::check_unused_dependencies()?;
                 build_system.run_cargo_deny()?;
                 build_system.run()?;
             } else {
