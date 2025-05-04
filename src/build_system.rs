@@ -151,18 +151,22 @@ impl BuildSystem {
 
     pub fn run_clippy(&self) -> Result<(), Box<dyn Error>> {
         println!("\nRunning clippy lint checks...");
-        Command::new("cargo")
+        let status = Command::new("cargo")
             .args(["clippy", "--", "-D", "warnings"])
             .status()?;
+        if !status.success() {
+            return Err("Clippy checks failed: non-zero exit code".into());
+        }
         println!("Clippy checks passed");
         Ok(())
     }
 
     pub fn run_cargo_deny(&self) -> Result<(), Box<dyn Error>> {
         println!("\nRunning cargo-deny checks...");
-        Command::new("cargo")
-            .args(["deny", "check"])
-            .status()?;
+        let status = Command::new("cargo").args(["deny", "check"]).status()?;
+        if !status.success() {
+            return Err("Cargo-deny checks failed: non-zero exit code".into());
+        }
         println!("Cargo-deny checks passed");
         Ok(())
     }
