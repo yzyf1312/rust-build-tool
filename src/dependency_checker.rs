@@ -72,11 +72,17 @@ pub fn check_rust_nightly() -> Result<(), Box<dyn Error>> {
 }
 
 pub fn check_upx_lzma() -> Result<(), Box<dyn Error>> {
-    let output = Command::new("upx").args(["--help"]).output()?;
+    let output = Command::new("upx").args(["--help"]).output().map_err(|e| {
+        if e.kind() == std::io::ErrorKind::NotFound {
+            "UPX is not installed.".to_string()
+        } else {
+            e.to_string()
+        }
+    })?;
 
     let stdout = String::from_utf8(output.stdout)?;
     if !stdout.contains("--lzma") {
-        return Err("UPX with LZMA support is required".into());
+        return Err("UPX with LZMA support is required.".into());
     }
 
     Ok(())
