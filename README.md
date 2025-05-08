@@ -49,8 +49,14 @@ cargo deny init
 
 ## Installation
 
+From source locally:
 ```bash
 cargo install --path .
+```
+
+From git repository:
+```bash
+cargo install --git https://github.com/yzyf1312/rust-build-tool.git
 ```
 
 To build and run directly from source with UPX compression:
