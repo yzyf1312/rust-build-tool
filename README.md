@@ -19,6 +19,34 @@ A powerful tool for building optimized Rust executables with additional quality 
 - cargo-udeps (for dependency checking)
 - UPX with LZMA support (optional, for compression)
 
+### Prerequisites Installation
+
+- Nightly version of rustc
+
+  ```bash
+  rustup install nightly
+  ```
+
+- cargo-udeps
+
+  ```bash
+  cargo install cargo-udeps
+  ```
+
+- cargo-deny
+
+  ```bash
+  cargo install cargo-deny
+  ```
+
+## Project Initialization
+
+### Initialize Deny
+
+```bash
+cargo deny init
+```
+
 ## Installation
 
 ```bash
