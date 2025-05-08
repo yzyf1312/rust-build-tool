@@ -28,7 +28,7 @@ impl Error for DepCheckError {}
 
 // 常量定义
 pub const CARGO_TOML: &str = "Cargo.toml";
-pub const UDEPS_CMD: &[&str] = &["cargo", "udeps", "--all-targets"];
+pub const UDEPS_CMD: &[&str] = &["cargo", "+nightly", "udeps", "--all-targets"];
 
 // 依赖位置信息
 pub struct DependencyLocation {
@@ -59,7 +59,9 @@ pub fn check_command(cmd: &str) -> Result<(), Box<dyn Error>> {
 }
 
 pub fn check_rust_nightly() -> Result<(), Box<dyn Error>> {
-    let output = Command::new("rustc").args(["--version"]).output()?;
+    let output = Command::new("rustup")
+        .args(["run", "nightly", "rustc", "--version"])
+        .output()?;
 
     let stdout = String::from_utf8(output.stdout)?;
     if !stdout.contains("nightly") {
@@ -155,7 +157,7 @@ pub fn execute_udeps() -> Result<String, DepCheckError> {
 
     if output.status.code().unwrap_or(1) > 1 {
         return Err(DepCheckError::CommandFailed(format!(
-            "命令执行失败 (code {}):\n{}",
+            "Command failed (code {}):\n{}",
             output.status.code().unwrap_or(1),
             String::from_utf8_lossy(&output.stderr)
         )));

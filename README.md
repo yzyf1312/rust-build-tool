@@ -1,6 +1,6 @@
 # Rust Build Tool
 
-A powerful tool for building optimized Rust executables with additional features like dependency checking.
+A powerful tool for building optimized Rust executables with additional quality assurance features.
 
 ## Features
 
@@ -9,15 +9,15 @@ A powerful tool for building optimized Rust executables with additional features
 - 🗜️ UPX compression support
 - 🖥️ Cross-platform support
 - ⚡ Fast builds with sensible defaults
-- ✅ Built-in quality checks (clippy, cargo-deny)
+- ✅ Invoke quality checks (clippy, cargo-deny, depcheck)
 
 ![Rust Build Tool Screenshot](./assets/Snipaste_2025-05-03_08-28-02.png)
 
 ## Requirements
 
-- Rust nightly toolchain
+- Rust toolchain (nightly must be installed but not set as default)
 - cargo-udeps (for dependency checking)
-- UPX (optional, for compression)
+- UPX with LZMA support (optional, for compression)
 
 ## Installation
 
