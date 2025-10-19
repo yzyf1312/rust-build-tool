@@ -5,6 +5,7 @@ use std::error::Error;
 mod build_system;
 mod cargo_config;
 mod dependency_checker;
+mod error;
 mod platform_helper;
 
 fn main() -> Result<(), Box<dyn Error>> {

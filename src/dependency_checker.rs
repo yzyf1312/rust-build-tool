@@ -2,6 +2,8 @@ use std::error::Error;
 use std::fmt;
 use std::process::{Command, Stdio};
 
+use crate::error::BuildToolError;
+
 // 错误类型定义
 #[derive(Debug)]
 pub enum DepCheckError {
@@ -58,14 +60,20 @@ pub fn check_command(cmd: &str) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-pub fn check_rust_nightly() -> Result<(), Box<dyn Error>> {
-    let output = Command::new("rustup")
+pub fn check_rust_nightly() -> Result<(), BuildToolError> {
+    let output = match Command::new("rustup")
         .args(["run", "nightly", "rustc", "--version"])
-        .output()?;
+        .output()
+    {
+        Ok(o) => o,
+        Err(_) => {
+            return Err(BuildToolError::RustupUnavailable);
+        }
+    };
 
-    let stdout = String::from_utf8(output.stdout)?;
+    let stdout = String::from_utf8_lossy(&output.stdout);
     if !stdout.contains("nightly") {
-        return Err("Rust nightly toolchain is required".into());
+        return Err(BuildToolError::MissingRustNightly);
     }
 
     Ok(())
