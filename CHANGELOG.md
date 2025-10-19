@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2025-10-19
+
+### Added
+- Enhanced build error handling with detailed cargo output capture on failures
+- Added RUSTFLAGS configuration for panic-related build settings to meet new core library requirements
+
+### Changed
+- Improved UPX compression error handling with proper path conversion
+- Refactored conditional statements in dependency checker to use modern Rust syntax
+- Reordered imports and adjusted main workflow order to ensure checks run before build
+- Updated `full-check` workflow comment to clarify complete process: `clippy -> depcheck -> deny -> build`
+
 ## [0.6.4] - 2025-05-08
 
 ### Fixed
