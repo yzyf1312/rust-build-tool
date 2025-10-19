@@ -65,7 +65,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
             let build_system = build_system::BuildSystem::new(&target, use_upx, clean)?;
             if sub_matches.get_flag("full-check") {
-                // Complete workflow: clippy -> deny -> build
+                // Complete workflow: clippy -> depcheck -> deny -> build
                 build_system.run_clippy()?;
                 dependency_checker::check_unused_dependencies()?;
                 build_system.run_cargo_deny()?;
