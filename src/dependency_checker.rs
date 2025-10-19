@@ -141,13 +141,13 @@ pub fn locate_dependency(
     ];
 
     for (section, flag) in sections {
-        if let Some(table) = cargo_data.get(section) {
-            if table.get(dep).is_some() {
-                return Ok(DependencyLocation {
-                    section: section.to_string(),
-                    flag: flag.map(|s| s.to_string()),
-                });
-            }
+        if let Some(table) = cargo_data.get(section)
+            && table.get(dep).is_some()
+        {
+            return Ok(DependencyLocation {
+                section: section.to_string(),
+                flag: flag.map(|s| s.to_string()),
+            });
         }
     }
 
@@ -180,8 +180,10 @@ pub fn execute_udeps() -> Result<String, DepCheckError> {
 pub fn get_confirmation(prompt: &str) -> bool {
     println!("{prompt} (y/n)");
     let mut input = String::new();
-    std::io::stdin().read_line(&mut input).unwrap();
-    input.trim().eq_ignore_ascii_case("y")
+    match std::io::stdin().read_line(&mut input) {
+        Ok(_) => input.trim().eq_ignore_ascii_case("y"),
+        Err(_) => false,
+    }
 }
 
 // 批量处理依赖项移除
@@ -284,10 +286,8 @@ pub fn parse_udeps_output(output: &str) -> Vec<String> {
             capturing = true;
             continue;
         }
-        if capturing {
-            if let Some(caps) = dep_pattern.captures(line) {
-                deps.push(caps[1].to_string());
-            }
+        if capturing && let Some(caps) = dep_pattern.captures(line) {
+            deps.push(caps[1].to_string());
         }
     }
 

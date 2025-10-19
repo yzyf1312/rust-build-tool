@@ -1,6 +1,6 @@
 use clap::{Arg, Command};
-use std::error::Error;
 use std::env;
+use std::error::Error;
 
 mod build_system;
 mod cargo_config;
@@ -71,9 +71,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                 build_system.run_cargo_deny()?;
                 build_system.run()?;
             } else {
-                // Original workflow: build -> optional checks
-                build_system.run()?;
-
                 if sub_matches.get_flag("clippy") {
                     build_system.run_clippy()?;
                 }
@@ -81,6 +78,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 if sub_matches.get_flag("deny") {
                     build_system.run_cargo_deny()?;
                 }
+                build_system.run()?;
             }
         }
         Some(("depcheck", _)) => {

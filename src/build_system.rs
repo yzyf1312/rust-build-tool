@@ -117,19 +117,30 @@ impl BuildSystem {
     fn build(&self) -> Result<(), Box<dyn Error>> {
         println!("Building optimized executable...");
         println!("Target: {}", self.target);
-        Command::new("cargo")
+        let rustflags = "-Zunstable-options -Cpanic=immediate-abort";
+        let output = Command::new("cargo")
             .args([
                 "+nightly",
                 "build",
                 "-Z",
                 "build-std=std,panic_abort",
-                "-Z",
-                "build-std-features=panic_immediate_abort",
                 "--target",
                 &self.target,
                 "--release",
             ])
-            .status()?;
+            .env("RUSTFLAGS", rustflags)
+            .output()
+            .map_err(|e| format!("Failed to execute cargo command: {e}"))?;
+
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+            return Err(format!(
+                "Cargo build command failed with status {}: {}",
+                output.status, stderr
+            )
+            .into());
+        }
+
         println!("Build complete!");
         Ok(())
     }
@@ -137,7 +148,13 @@ impl BuildSystem {
     fn compress(&self) -> Result<(), Box<dyn Error>> {
         println!("Compressing with UPX: {}", self.executable.display());
         Command::new("upx")
-            .args(["--best", "--lzma", self.executable.to_str().unwrap()])
+            .args([
+                "--best",
+                "--lzma",
+                self.executable
+                    .to_str()
+                    .ok_or("Failed to convert executable path to string")?,
+            ])
             .status()?;
         Ok(())
     }
